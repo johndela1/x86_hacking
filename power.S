@@ -1,3 +1,6 @@
+# compare output of recursive and iterative functions
+# with same input (should be equal)
+
 .section .text
 
 .globl _start
@@ -13,6 +16,20 @@ _start:
 	addl $8, %esp
 	popl %ebx
 	addl %eax, %ebx
+	pushl %ebx
+	push $3
+	push $2
+	call ipower
+	addl $8, %esp
+	push %eax
+	push $0
+	push $5
+	call ipower
+	add $8, %esp
+	popl %ebx
+	addl %ebx, %eax
+	popl %ebx
+	subl %eax, %ebx
 	movl $1, %eax
 	int $0x80
 .type power,@function
@@ -37,6 +54,27 @@ power_loop:
 	jmp power_loop
 power_end:
 	movl -4(%ebp), %eax
+	movl %ebp, %esp
+	popl %ebp
+	ret
+
+ipower:
+	pushl %ebp
+	movl %esp, %ebp
+	movl 8(%ebp), %eax
+	movl 12(%ebp), %ebx
+	cmpl $0, %ebx
+	jne 1f
+	movl $1, %eax
+	jmp ipower_end
+1:	movl %eax, %ecx
+ipower_loop:
+	cmpl $1, %ebx
+	je ipower_end
+	imull %ecx, %eax
+	decl %ebx
+	jmp ipower_loop
+ipower_end:
 	movl %ebp, %esp
 	popl %ebp
 	ret
