@@ -4,6 +4,7 @@
 _start:
 	pushl $4
 	call fact
+	addl $4, %esp
 	movl %eax, %ebx
 	movl $1, %eax
 	int $0x80
